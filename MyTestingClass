@@ -1,0 +1,37 @@
+import java.util.Random;
+
+public class MyTestingClass {
+    private int x;
+    private String y;
+
+    public MyTestingClass(int x, String y) {
+        this.x = x;
+        this.y = y;
+    }
+
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(x);
+        result = 31 * result + y.hashCode();
+        return result;
+    }
+
+    public static void main(String[] args) {
+        MyHashTable<MyTestingClass, Student> table = new MyHashTable<>();
+
+        Random random = new Random();
+        for (int i = 0; i < 10000; i++) {
+            MyTestingClass key = new MyTestingClass(random.nextInt(), "Test");
+            Student value = new Student("John Doe", 20);
+            table.put(key, value);
+        }
+
+
+        int[] counts = table.getCounts();
+        for (int i = 0; i < counts.length; i++) {
+            System.out.println("Bucket " + i + ": " + counts[i]);
+        }
+    }
+}
+
