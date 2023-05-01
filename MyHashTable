@@ -1,0 +1,130 @@
+public class MyHashTable<K, V> {
+    private HashNode<K, V>[] chainArray;
+    private int M = 11;
+    private int size;
+
+    public MyHashTable() {
+        chainArray = new HashNode[M];
+    }
+
+    public MyHashTable(int M) {
+        this.M = M;
+        chainArray = new HashNode[M];
+    }
+
+    private int hash(K key) {
+        return (key.hashCode() & 0x7fffffff) % M;
+    }
+
+    public void put(K key, V value) {
+        int index = hash(key);
+        HashNode<K, V> node = new HashNode<>(key, value);
+
+        if (chainArray[index] == null) {
+            chainArray[index] = node;
+        } else {
+            HashNode<K, V> curr = chainArray[index];
+            while (((HashNode<K, V>) curr).getNext() != null && !((HashNode<K, V>) curr).getKey().equals(key)) {
+                curr = ((HashNode<K, V>) curr).getNext();
+            }
+            if (((HashNode<K, V>) curr).getKey().equals(key)) {
+                ((HashNode<K, V>) curr).setValue(value);
+            } else {
+                ((HashNode<K, V>) curr).setNext(node);
+            }
+        }
+        size++;
+    }
+
+    public V get(K key) {
+        int index = hash(key);
+        HashNode<K, V> curr = chainArray[index];
+
+        while (curr != null) {
+            if (((HashNode<K, V>) curr).getKey().equals(key)) {
+                return ((HashNode<K, V>) curr).getValue();
+            }
+            curr = ((HashNode<K, V>) curr).getNext();
+        }
+
+        return null;
+    }
+
+    public V remove(K key) {
+        int index = hash(key);
+        HashNode<K, V> curr = chainArray[index];
+        HashNode<K, V> prev = null;
+
+        while (curr != null) {
+            if (((HashNode<K, V>) curr).getKey().equals(key)) {
+                if (prev == null) {
+                    chainArray[index] = ((HashNode<K, V>) curr).getNext();
+                } else {
+                    prev.setNext(((HashNode<K, V>) curr).getNext());
+                }
+                size--;
+                return ((HashNode<K, V>) curr).getValue();
+            }
+            prev = curr;
+            curr = ((HashNode<K, V>) curr).getNext();
+        }
+
+        return null;
+    }
+
+    public boolean contains(V value) {
+        for (HashNode<K, V> node : chainArray) {
+            HashNode<K, V> curr = node;
+            while (curr != null) {
+                if (((HashNode<K, V>) curr).getValue().equals(value)) {
+                    return true;
+                }
+                curr = ((HashNode<K, V>) curr).getNext();
+            }
+        }
+        return false;
+    }
+
+    public K getKey(V value) {
+        for (HashNode<K, V> node : chainArray) {
+            HashNode<K, V> curr = node;
+            while (curr != null) {
+                if (((HashNode<K, V>) curr).getValue().equals(value)) {
+                    return ((HashNode<K, V>) curr).getKey();
+                }
+                curr = ((HashNode<K, V>) curr).getNext();
+            }
+        }
+        return null;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public void printBucketSizes() {
+        for (int i = 0; i < chainArray.length; i++) {
+            int count = 0;
+            HashNode<K, V> curr = chainArray[i];
+            while (curr != null) {
+                count++;
+                curr = ((HashNode<K, V>) curr).getNext();
+            }
+            System.out.println("Bucket " + i + " contains " + count + " elements.");
+        }
+    }
+
+    public int[] getCounts() {
+        int[] counts = new int[chainArray.length];
+        for (int i = 0; i < chainArray.length; i++) {
+            int count = 0;
+            HashNode<K, V> curr = chainArray[i];
+            while (curr != null) {
+                count++;
+                curr = curr.getNext();
+            }
+            counts[i] = count;
+        }
+        return counts;
+    }
+}
